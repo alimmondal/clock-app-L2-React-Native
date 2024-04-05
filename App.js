@@ -1,8 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { ActivityIndicator, Image, ImageBackground, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import {  useFonts, Inter_400Regular,Inter_700Bold} from '@expo-google-fonts/inter';
-import { useState } from 'react';
-
+import React, { useState } from 'react';
 
 const RowView = ({ label, value }) => {
   return (
@@ -38,7 +37,9 @@ const RowView = ({ label, value }) => {
 }
 
 export default function App() {
-  const [showMore, setShowMore] =useState(false);
+  const [showMore, setShowMore] = useState(false);
+  const [darkMode, setDarkMode] = useState(false); // State for dark mode
+
   let [fontsLoaded] = useFonts({
     "Inter-Bold": Inter_700Bold,
    "Inter-Regular": Inter_400Regular,
@@ -48,10 +49,17 @@ export default function App() {
     return <ActivityIndicator/>;
   }
 
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  }
+
+  const containerStyle = darkMode ? styles.containerDark : styles.containerLight;
+  const textStyle = darkMode ? styles.textDark : styles.textLight;
+
   return (
     <ImageBackground
       source={require("./assets/light-bg.png")}
-      style={styles.container}>
+      style={[styles.container, containerStyle]}>
       
       {/* parent view */}
       <View style={styles.parentView}>
@@ -60,10 +68,10 @@ export default function App() {
         {!showMore && (
           <View style={styles.upperView}>
           <View style={styles.textView}>
-            <Text style={styles.pText}>
+            <Text style={[styles.pText, textStyle]}>
               "The science of operations, as derived from Mathematics more especially, is a science itself, and has its own abstract truth and value"
             </Text>
-            <Text style={styles.writer}> - Ada Lovelace</Text>
+            <Text style={[styles.writer, textStyle]}> - Ada Lovelace</Text>
           </View>
             <Image source={require("./assets/refresh.png")}/>
           </View>
@@ -76,23 +84,23 @@ export default function App() {
           {/* GREETING */}
           <View style={styles.sunView}>
             <Image source={require("./assets/sun.png")} />
-            <Text style={styles.sunText}>GOOD MORNING!</Text>
+            <Text style={[styles.sunText, textStyle]}>GOOD MORNING!</Text>
           </View>   
           
           {/* Time */}
           <View style={styles.timeView}>
-            <Text style={styles.timeText}>
-              <Text style={styles.bigText}>
+            <Text style={[styles.timeText, textStyle]}>
+              <Text style={[styles.bigText, textStyle]}>
                 12:12
               </Text>
-              <Text style={styles.bstText}>
+              <Text style={[styles.bstText, textStyle]}>
                 BST
               </Text>
             </Text>
           </View>
           {/* Location */}
         <View style={styles.addressView}>
-          <Text style={styles.addressText}>In London, Uk </Text>
+          <Text style={[styles.addressText, textStyle]}>In London, Uk </Text>
           </View>
           
           {/* Button */}
@@ -102,7 +110,7 @@ export default function App() {
             }}
             style={styles.firstButton}
           >
-            <Text style={styles.buttonText}>{showMore?"LESS":"MORE"}</Text>
+            <Text style={[styles.buttonText, textStyle]}>{showMore?"LESS":"MORE"}</Text>
             <Image source={
               showMore
                 ?require("./assets/arrow-up.png")
@@ -121,6 +129,11 @@ export default function App() {
             <RowView label={"week number"} value="12" />
         </View>)}
         
+      {/* Dark Mode Button */}
+      <TouchableOpacity onPress={toggleDarkMode} style={styles.darkModeButton}>
+        <Text style={styles.darkModeButtonText}>{darkMode ? "Light Mode" : "Dark Mode"}</Text>
+      </TouchableOpacity>
+      
     </ImageBackground>
   );
 }
@@ -128,6 +141,18 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  containerLight: {
+    backgroundColor: '#ffffff', // Light mode background color
+  },
+  containerDark: {
+    backgroundColor: '#303030', // Dark mode background color
+  },
+  textLight: {
+    color: '#303030', // Light mode text color
+  },
+  textDark: {
+    color: '#ffffff', // Dark mode text color
   },
   parentView: {
     flex: 1,
@@ -144,11 +169,9 @@ const styles = StyleSheet.create({
   pText: {
     fontFamily: "Inter-Regular",
     fontSize: 12,
-    color: "#fff",
+    letterSpacing:2
   },
   writer: {
-    color: "#fff",
-    fontFamily: "Inter-Bold",
     marginTop: 10,
   },
   bottomView: {
@@ -160,29 +183,21 @@ const styles = StyleSheet.create({
     gap:10
   },
   sunText: {
-    color: "#fff",
-    fontFamily: "Inter-Regular",
     letterSpacing:3
   },
   timeView: {
     marginTop: 10,
   },
   bigText: {
-    fontFamily: "Inter-Bold",
     fontSize: 100,
-    color: "#fff",
   },
   bstText: {
-    fontFamily: "Inter-Regular",
     fontSize: 15,
-    color: "#fff"
   },
   addressView: {
     marginTop: 15
   },
   addressText: {
-    fontFamily: "Inter-Regular",
-    color: "#fff",
     fontSize: 10,
     letterSpacing: 3,
     textTransform: "uppercase",
@@ -191,7 +206,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     height: 40,
     width: 115,
-    backgroundColor: "#fff",
     borderRadius: 30,
     justifyContent: "space-between",
     alignItems: "center",
@@ -200,7 +214,6 @@ const styles = StyleSheet.create({
     marginTop:50
   },
   buttonText: {
-    fontFamily: "Inter-Bold",
     fontSize: 12,
     letterSpacing: 3,
   },
@@ -209,6 +222,16 @@ const styles = StyleSheet.create({
     opacity: 0.8,
     paddingVertical: 48,
     paddingHorizontal: 26,
-  }
-
+  },
+  darkModeButton: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    padding: 10,
+    backgroundColor: '#00000080', // Semi-transparent black
+    borderRadius: 5,
+  },
+  darkModeButtonText: {
+    color: '#ffffff', // White text color
+  },
 });
